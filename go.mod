@@ -1,6 +1,6 @@
 module github.com/go-mogu/mgu-search
 
-go 1.18
+go 1.19
 
 require (
 	github.com/blugelabs/bluge v0.2.2
