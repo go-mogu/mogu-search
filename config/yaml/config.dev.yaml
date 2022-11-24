@@ -1,0 +1,32 @@
+server:
+  name: mogu-search
+  port: 9605
+
+nacos:
+  client:
+    namespaceId: dev
+    timeoutMs: 5000
+    notLoadCacheAtStart: true
+    username: nacos
+    password: nacos
+    logLevel: debug
+  server:
+    - ipAddr: 10.168.1.125
+      port: 8848
+      contextPath: /nacos
+      scheme: http
+  #      grpcPort: 9848
+  config:
+    #指定分组
+    group: test
+    type: yaml
+  discovery:
+    Weight: 1
+    enable: true
+    healthy: true
+    ephemeral: true
+    groupName: DEFAULT_GROUP
+    metadata:
+      appName: mogu-search
+      Gary-Version: 1.0.0
+

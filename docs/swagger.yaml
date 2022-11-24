@@ -1,0 +1,198 @@
+basePath: /
+definitions:
+  model.DocIndex:
+    properties:
+      author:
+        description: 作者
+        type: string
+      blogSortName:
+        type: string
+      blogSortUid:
+        type: string
+      content:
+        type: string
+      createTime:
+        type: string
+      id:
+        type: string
+      isPublish:
+        type: string
+      oid:
+        type: integer
+      photoUrl:
+        type: string
+      sortName:
+        type: string
+      summary:
+        type: string
+      tagNameList:
+        description: 标签名称
+        items:
+          type: string
+        type: array
+      tagUidList:
+        description: 标签id
+        items:
+          type: string
+        type: array
+      title:
+        type: string
+      type:
+        description: '资源类型: 文章、动态、问答、面经'
+        type: string
+      uid:
+        type: string
+    type: object
+  response.JsonResponse:
+    properties:
+      code:
+        type: string
+      data: {}
+      message:
+        type: string
+      requestId:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: 蘑菇博客搜索服务
+  title: 蘑菇博客搜索服务
+  version: 0.0.1
+paths:
+  /search/addElasticSearchIndexByUid:
+    post:
+      consumes:
+      - application/json
+      description: 通过博客Uid添加索引
+      parameters:
+      - description: 博客uid
+        in: query
+        name: uid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 添加提示
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.JsonResponse'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      summary: 通过博客Uid添加索引
+      tags:
+      - 索引相关
+  /search/deleteElasticSearchByUid:
+    post:
+      consumes:
+      - application/json
+      description: 删除博客索引
+      parameters:
+      - description: 删除uid
+        in: query
+        name: uid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 删除提示
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.JsonResponse'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      summary: 删除博客索引
+      tags:
+      - 索引相关
+  /search/deleteElasticSearchByUids:
+    post:
+      consumes:
+      - application/json
+      description: 批量删除博客索引
+      parameters:
+      - description: 删除uid
+        in: query
+        name: uid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 删除提示
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.JsonResponse'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      summary: 批量删除博客索引
+      tags:
+      - 索引相关
+  /search/elasticSearchBlog:
+    get:
+      consumes:
+      - application/json
+      description: 博客搜索
+      parameters:
+      - default: 1
+        in: query
+        name: currentPage
+        type: integer
+      - in: query
+        name: keywords
+        type: string
+      - default: 10
+        in: query
+        name: pageSize
+        type: integer
+      - default: querystring
+        in: query
+        name: searchType
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 查询结果
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.JsonResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.DocIndex'
+                  type: array
+              type: object
+      summary: 博客搜索
+      tags:
+      - 索引相关
+  /search/initElasticSearchIndex:
+    post:
+      consumes:
+      - application/json
+      description: 初始化索引
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 初始化索引提示
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.JsonResponse'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      summary: 初始化索引
+      tags:
+      - 索引相关
+swagger: "2.0"

@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+  meilisearch:
+    image: getmeili/meilisearch:v0.29
+    restart: always
+    container_name: meilisearch
+    ports:
+      - "7700:7700"
+    command: meilisearch --env="development"
+    environment:
+      MEILI_MASTER_KEY: mogu2018
+    volumes:
+      - ./meili_data:/meili_data
+    networks:
+      - mogu
+      
+networks:
+  mogu:
+    external: true
