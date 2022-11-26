@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/cloudwego/hertz/pkg/app"
+	"github.com/cloudwego/hertz/pkg/app/middlewares/server/recovery"
 	"github.com/cloudwego/hertz/pkg/app/server"
 	"github.com/cloudwego/hertz/pkg/app/server/registry"
 	"github.com/cloudwego/hertz/pkg/common/utils"
@@ -40,7 +41,7 @@ func Register(port string) *server.Hertz {
 	addr = addr + ":" + port
 	//注册服务
 	r := nacos.NewNacosRegistry(nacosCli)
-	h := server.Default(
+	h := server.New(
 		server.WithHostPorts("0.0.0.0"+":"+port),
 		server.WithRegistry(r, &registry.Info{
 			ServiceName: global.Cfg.Server.Name,
@@ -49,6 +50,8 @@ func Register(port string) *server.Hertz {
 			Tags:        global.Cfg.Nacos.Discovery.Metadata,
 		}),
 	)
+	h.Use(recovery.Recovery(recovery.WithRecoveryHandler(response.RecoveryHandler)))
+
 	url := swagger.URL(fmt.Sprintf("http://localhost:%s/swagger/doc.json", port)) // The url pointing to API definition
 	h.GET("/swagger/*any", swagger.WrapHandler(swaggerFiles.Handler, url))
 	// header add X-Request-Id

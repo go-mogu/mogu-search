@@ -2,7 +2,6 @@ package logic
 
 import (
 	"context"
-	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/go-mogu/mgu-search/global"
 	"github.com/go-mogu/mgu-search/internal/client"
@@ -11,7 +10,7 @@ import (
 	"github.com/go-mogu/mgu-search/internal/service"
 	"github.com/go-mogu/mgu-search/internal/util"
 	"github.com/go-mogu/mgu-search/pkg/consts/SysConf"
-	"github.com/go-mogu/mgu-search/pkg/response"
+	utils "github.com/go-mogu/mgu-search/pkg/util/base"
 	"github.com/go-mogu/mgu-search/pkg/util/gconv"
 	zinc "github.com/zinclabs/sdk-go-zincsearch"
 	"strings"
@@ -28,7 +27,7 @@ func NewZinc() *ZincSearch {
 
 type ZincSearch struct{}
 
-func (s *ZincSearch) SearchBlog(blog model.SearchBlog) (result map[string]interface{}, err error) {
+func (s *ZincSearch) SearchBlog(ctx context.Context, blog model.SearchBlog) (result map[string]interface{}, err error) {
 	if blog.CurrentPage-1 > 0 {
 		blog.CurrentPage = blog.CurrentPage - 1
 	} else {
@@ -97,7 +96,7 @@ func handlerHighlight() zinc.MetaHighlight {
 	}
 }
 
-func (s *ZincSearch) DeleteElasticSearchByUidStr(uid string) (err error) {
+func (s *ZincSearch) DeleteElasticSearchByUidStr(ctx context.Context, uid string) (err error) {
 	uidList := strings.Split(uid, SysConf.FILE_SEGMENTATION)
 	for _, id := range uidList {
 		_, _, err = global.Zinc.Document.Delete(global.ZincAuth, consts.BlogIndex, id).Execute()
@@ -126,12 +125,11 @@ func (s *ZincSearch) AddElasticSearchIndexByUid(ctx context.Context, uid string)
 	return
 }
 
-func (s *ZincSearch) InitElasticSearchIndex(ctx context.Context, requestContext *app.RequestContext) {
+func (s *ZincSearch) InitElasticSearchIndex(ctx context.Context) {
 	_, _, err := global.Zinc.Index.Delete(global.ZincAuth, consts.BlogIndex).Execute()
 	if err != nil {
 		hlog.Error(err)
 	}
-
 	indexName := consts.BlogIndex
 	shardNum := int32(1)
 	storageType := global.Cfg.Search.Zinc.StorageType
@@ -144,10 +142,7 @@ func (s *ZincSearch) InitElasticSearchIndex(ctx context.Context, requestContext 
 
 	metaIndex.Mappings = initMappings()
 	_, _, err = global.Zinc.Index.Create(global.ZincAuth).Data(metaIndex).Execute()
-	if err != nil {
-		hlog.Error(err)
-		response.FailedJson(requestContext, err.Error(), nil)
-	}
+	utils.ErrIsNil(err)
 	page := 1
 	row := 15
 	size := 0
@@ -155,10 +150,7 @@ func (s *ZincSearch) InitElasticSearchIndex(ctx context.Context, requestContext 
 	for {
 		// 查询blog信息
 		list, err := client.WebClient.GetBlogBySearch(ctx, page, row)
-		if err != nil {
-			hlog.Error(err)
-			response.FailedJson(requestContext, err.Error(), nil)
-		}
+		utils.ErrIsNil(err)
 		//构建blog
 		size = len(list)
 		for _, blog := range list {
@@ -178,10 +170,8 @@ SAVE:
 		Index:   &index,
 		Records: records,
 	}).Execute()
-	if err != nil {
-		response.FailedJson(requestContext, err.Error(), nil)
-	}
-	response.SuccessJson(requestContext, "初始化成功", nil)
+	utils.ErrIsNil(err)
+
 }
 
 func initMappings() map[string]interface{} {

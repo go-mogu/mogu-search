@@ -30,7 +30,7 @@ func (c *searchController) SearchBlog(context context.Context, ctx *app.RequestC
 	if err != nil {
 		response.BadRequestException(ctx, "")
 	}
-	blog, err := service.Search(global.Cfg.Search.Type).SearchBlog(param)
+	blog, err := service.Search(global.Cfg.Search.Type).SearchBlog(context, param)
 	if err != nil {
 		response.FailedJson(ctx, err.Error(), nil)
 	}
@@ -47,7 +47,7 @@ func (c *searchController) SearchBlog(context context.Context, ctx *app.RequestC
 // @Success   200   {object}  response.JsonResponse{msg=string}  "删除提示"
 // @Router /search/deleteElasticSearchByUids [post]
 func (c *searchController) DeleteElasticSearchByUidStr(context context.Context, ctx *app.RequestContext) {
-	err := service.Search(global.Cfg.Search.Type).DeleteElasticSearchByUidStr(ctx.Query("uid"))
+	err := service.Search(global.Cfg.Search.Type).DeleteElasticSearchByUidStr(context, ctx.Query("uid"))
 	if err != nil {
 		response.FailedJson(ctx, err.Error(), nil)
 	}
@@ -64,7 +64,7 @@ func (c *searchController) DeleteElasticSearchByUidStr(context context.Context, 
 // @Success   200   {object}  response.JsonResponse{msg=string}  "删除提示"
 // @Router /search/deleteElasticSearchByUid [post]
 func (c *searchController) DeleteElasticSearchByUid(context context.Context, ctx *app.RequestContext) {
-	err := service.Search(global.Cfg.Search.Type).DeleteElasticSearchByUidStr(ctx.Query("uid"))
+	err := service.Search(global.Cfg.Search.Type).DeleteElasticSearchByUidStr(context, ctx.Query("uid"))
 	if err != nil {
 		response.FailedJson(ctx, err.Error(), nil)
 	}
@@ -97,5 +97,6 @@ func (c *searchController) AddElasticSearchIndexByUid(context context.Context, c
 // @Success   200   {object}  response.JsonResponse{msg=string}  "初始化索引提示"
 // @Router /search/initElasticSearchIndex [post]
 func (c *searchController) InitElasticSearchIndex(context context.Context, ctx *app.RequestContext) {
-	service.Search(global.Cfg.Search.Type).InitElasticSearchIndex(context, ctx)
+	service.Search(global.Cfg.Search.Type).InitElasticSearchIndex(context)
+	response.SuccessJson(ctx, "初始化成功", nil)
 }

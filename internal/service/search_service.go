@@ -3,15 +3,14 @@ package service
 import (
 	"context"
 	"fmt"
-	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/go-mogu/mgu-search/internal/model"
 )
 
 type ISearch interface {
-	SearchBlog(blog model.SearchBlog) (result map[string]interface{}, err error)
-	DeleteElasticSearchByUidStr(uid string) (err error)
+	SearchBlog(ctx context.Context, blog model.SearchBlog) (result map[string]interface{}, err error)
+	DeleteElasticSearchByUidStr(ctx context.Context, uid string) (err error)
 	AddElasticSearchIndexByUid(ctx context.Context, uid string) (err error)
-	InitElasticSearchIndex(ctx context.Context, requestContext *app.RequestContext)
+	InitElasticSearchIndex(ctx context.Context)
 }
 
 var abstractSearch = map[string]ISearch{}
