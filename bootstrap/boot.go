@@ -6,8 +6,8 @@ import (
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/go-mogu/mgu-search/config"
 	"github.com/go-mogu/mgu-search/global"
-	"github.com/go-mogu/mgu-search/pkg/log"
 	"github.com/go-mogu/mgu-search/pkg/util"
+	"github.com/go-mogu/mgu-search/pkg/zap"
 	"github.com/nacos-group/nacos-sdk-go/v2/clients"
 	"github.com/nacos-group/nacos-sdk-go/v2/vo"
 	client "github.com/zinclabs/sdk-go-zincsearch"
@@ -88,7 +88,7 @@ func ListenConfig() error {
 
 // bootLogger 将配置载入日志服务
 func bootLogger() error {
-	logger := log.NewLogger(global.Cfg.Zap.Director)
+	logger := zap.NewLogger(global.Cfg.Zap.Director)
 	defer logger.Sync()
 	hlog.SetLogger(logger)
 	hlog.Infof("程序载入Logger服务成功 [ 日志路径：%s ]", global.Cfg.Zap.Director)

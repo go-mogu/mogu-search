@@ -52,7 +52,7 @@ func Register(port string) *server.Hertz {
 	)
 	h.Use(recovery.Recovery(recovery.WithRecoveryHandler(response.RecoveryHandler)))
 
-	url := swagger.URL(fmt.Sprintf("http://localhost:%s/swagger/doc.json", port)) // The url pointing to API definition
+	url := swagger.URL(fmt.Sprintf("http://0.0.0.0:%s/swagger/doc.json", port)) // The url pointing to API definition
 	h.GET("/swagger/*any", swagger.WrapHandler(swaggerFiles.Handler, url))
 	// header add X-Request-Id
 	h.Use(requestid.New())
